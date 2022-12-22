@@ -1,5 +1,8 @@
 {
-    "DevMode": "false",
+    "DevMode": false,
     "DevGuildID": "000000000000000000",
-    "BotID": "000000000000000000"
+    "BotID": "000000000000000000",
+    "WatchForums": true,
+    "PluginForumID": "000000000000000000",
+    "ThemeForumID": "000000000000000000"
 }

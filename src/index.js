@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits, Events } from 'discord.js';
 import { config } from 'dotenv';
+import { MongoClient } from 'mongodb';
 
 config();
 
@@ -17,6 +18,14 @@ bot.once(Events.ClientReady, () => {
         `[Info]: Connected To Discord!\n[Info]:\tGuild Count: ${bot.guilds.cache.size}\n[Info]:\tMy ID: ${bot.user?.id}`,
     );
 });
+
+// DB Connection ***************************************************************
+
+Promise.resolve(new MongoClient(`mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_ADDRESS}:${process.env.MONGO_PORT}`))
+    .then(client => client.connect())
+    .then(client => bot.mango = client.db(process.env.MONGO_DB))
+    .catch((e) => console.error(`[MongoDB]: ${e}`));
+
 
 
 // Slash Command Indexer ******************************************************
@@ -38,10 +47,10 @@ bot.on(Events.InteractionCreate, async interaction => {
 
 // Other Events ***************************************************************
 
-bot.on(Events.Error, console.error);
-bot.on(Events.Warn, console.warn);
+bot.on(Events.Error, (e) => console.error(`[Discord API]: ${e}`));
+bot.on(Events.Warn, (e) => console.warn(`[Discord API]: ${e}`));
 bot.on(Events.Invalidated, () => {
-    console.log('[Info]: Session invalidated!');
+    console.log('[Info]: Session invalidated! Goodbye!');
     bot.destroy();
     process.exit(1);
 });
