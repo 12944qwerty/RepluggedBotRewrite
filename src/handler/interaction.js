@@ -1,4 +1,4 @@
-import { slashCommands } from "../indexer/slash.js";
+import { slashCommands } from '../indexer/slash.js';
 
 export async function handleInteraction(interaction, cli) {
     if (interaction.isCommand()) {

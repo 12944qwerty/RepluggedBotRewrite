@@ -1,6 +1,5 @@
 import { Client, GatewayIntentBits, Events } from 'discord.js';
 import { config } from 'dotenv';
-import lightercolors from 'lighter-colors';
 
 config();
 
@@ -15,7 +14,7 @@ const bot = new Client({
 
 bot.once(Events.ClientReady, () => {
     console.log(
-        `[Info]: Connected To Discord!\n[Info]:\tGuild Count: ${bot.guilds.cache.size}\n[Info]:\tMy ID: ${bot.user?.id}`.green,
+        `[Info]: Connected To Discord!\n[Info]:\tGuild Count: ${bot.guilds.cache.size}\n[Info]:\tMy ID: ${bot.user?.id}`,
     );
 });
 
@@ -35,7 +34,7 @@ await pushCommands();
 import { handleInteraction } from './handler/interaction.js';
 bot.on(Events.InteractionCreate, async interaction => {
     await handleInteraction(interaction, bot);
-})
+});
 
 // Other Events ***************************************************************
 
