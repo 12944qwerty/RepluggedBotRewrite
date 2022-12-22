@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "lint": "eslint src --ext .js"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@discordjs/rest": "^1.5.0",
