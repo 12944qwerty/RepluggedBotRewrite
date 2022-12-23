@@ -1,0 +1,10 @@
+{
+    "cSpell.words": [
+        "forg",
+        "reactionmanager",
+        "tagmanager"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    }
+}

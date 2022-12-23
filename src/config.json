@@ -4,5 +4,24 @@
     "BotID": "1052654190343770232",
     "WatchForums": true,
     "PluginForumID": "1055609939231510598",
-    "ThemeForumID": "000000000000000000"
+    "ThemeForumID": "000000000000000000",
+    "DB": "replugged",
+    "Flags": {
+        "RemoveOnLeave": [
+            "SERVER_BOOSTER"
+        ],
+        "SetDB": [
+            "CONTRIUBUTOR",
+            "SERVER_BOOSTER",
+            "TRANSLATOR",
+            "BUG_HUNTER",
+            "EARLY_USER"
+        ],
+        "SetDiscord": [
+            "CONTRIUBUTOR",
+            "TRANSLATOR",
+            "BUG_HUNTER",
+            "EARLY_USER"
+        ]
+    }
 }
