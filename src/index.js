@@ -36,7 +36,7 @@ if (await getSetting('PushCommands')) {
 
 // Interaction Handler ********************************************************
 
-import { handleInteraction } from './handler/interaction.js';
+import { handleInteraction } from './events/interaction.js';
 
 bot.on(Events.InteractionCreate, async interaction => {
     try {
@@ -47,7 +47,7 @@ bot.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-import { handleMemberLeave } from './handler/memberLeave.js';
+import { handleMemberLeave } from './events/memberLeave.js';
 
 bot.on(Events.GuildMemberRemove, async member => {
     try {
@@ -59,7 +59,7 @@ bot.on(Events.GuildMemberRemove, async member => {
 
 // Guild Member Update ********************************************************
 
-import { handleMemberUpdate } from './handler/memberUpdate.js';
+import { handleMemberUpdate } from './events/memberUpdate.js';
 
 bot.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
     try {
