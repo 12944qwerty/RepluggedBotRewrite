@@ -5,8 +5,6 @@ config();
 
 export const bot = new Client({
     intents: [
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
     ],
@@ -30,8 +28,11 @@ await indexSlashCommands();
 
 // Push Slash Commands To Discord *********************************************
 
+import { getSetting } from './db/config.js';
 import { pushCommands } from './lib/pushCommands.js';
-await pushCommands();
+if (await getSetting('PushCommands')) {
+    await pushCommands();
+}
 
 // Interaction Handler ********************************************************
 
@@ -45,23 +46,6 @@ bot.on(Events.InteractionCreate, async interaction => {
         console.error(`[Interaction Handler]: ${error}`);
     }
 });
-
-
-// Message Handler ***********************************************************
-
-import { handleMessage } from './handler/message.js';
-
-bot.on(Events.MessageCreate, async message => {
-    try {
-        await handleMessage(message, bot);
-    } catch
-    (error) {
-        console.error(`[Message Handler]: ${error}`);
-    }
-});
-
-
-// Guild Member Left *********************************************************
 
 import { handleMemberLeave } from './handler/memberLeave.js';
 
@@ -84,9 +68,6 @@ bot.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
         console.error(`[Guild Update Handler]: ${error}`);
     }
 });
-
-
-
 
 // Other Events ***************************************************************
 

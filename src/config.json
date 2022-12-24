@@ -6,6 +6,7 @@
     "PluginForumID": "1055609939231510598",
     "ThemeForumID": "000000000000000000",
     "DB": "replugged",
+    "PushCommands": true,
     "Flags": {
         "RemoveOnLeave": [
             "SERVER_BOOSTER"
