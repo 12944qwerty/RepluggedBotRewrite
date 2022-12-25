@@ -66,7 +66,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#addKey">addKey</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#blacklistUser">blacklistUser</a></li><li><a href="global.html#bot">bot</a></li><li><a href="global.html#clientID">clientID</a></li><li><a href="global.html#connectDB">connectDB</a></li><li><a href="global.html#database">database</a></li><li><a href="global.html#dbName">dbName</a></li><li><a href="global.html#delKey">delKey</a></li><li><a href="global.html#devMode">devMode</a></li><li><a href="global.html#getKeys">getKeys</a></li><li><a href="global.html#getSetting">getSetting</a></li><li><a href="global.html#guildID">guildID</a></li><li><a href="global.html#handleInteraction">handleInteraction</a></li><li><a href="global.html#indexSlashCommands">indexSlashCommands</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#pushCommands">pushCommands</a></li><li><a href="global.html#rawDB">rawDB</a></li><li><a href="global.html#readJSON">readJSON</a></li><li><a href="global.html#restAPI">restAPI</a></li><li><a href="global.html#setupDB">setupDB</a></li><li><a href="global.html#slashCommandData">slashCommandData</a></li><li><a href="global.html#slashCommands">slashCommands</a></li><li><a href="global.html#userExists">userExists</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#addKey">addKey</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#blacklistAndDeleteUser">blacklistAndDeleteUser</a></li><li><a href="global.html#bot">bot</a></li><li><a href="global.html#clientID">clientID</a></li><li><a href="global.html#connectDB">connectDB</a></li><li><a href="global.html#database">database</a></li><li><a href="global.html#dbName">dbName</a></li><li><a href="global.html#deleteKey">deleteKey</a></li><li><a href="global.html#devMode">devMode</a></li><li><a href="global.html#getKeys">getKeys</a></li><li><a href="global.html#getSetting">getSetting</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#guildID">guildID</a></li><li><a href="global.html#handleInteraction">handleInteraction</a></li><li><a href="global.html#indexSlashCommands">indexSlashCommands</a></li><li><a href="global.html#isBlacklisted">isBlacklisted</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#pushCommands">pushCommands</a></li><li><a href="global.html#rawDB">rawDB</a></li><li><a href="global.html#readJSON">readJSON</a></li><li><a href="global.html#restAPI">restAPI</a></li><li><a href="global.html#setupDB">setupDB</a></li><li><a href="global.html#slashCommandData">slashCommandData</a></li><li><a href="global.html#slashCommands">slashCommands</a></li><li><a href="global.html#userExists">userExists</a></li></ul></div>
                 
             </nav>
         </div>
@@ -1147,7 +1147,7 @@
         <p class="tag-source">
             <a href="db_mongo.js.html" class="button">View Source</a>
             <span>
-                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line106">line 106</a>
+                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line100">line 100</a>
             </span>
         </p>
     
@@ -1213,7 +1213,7 @@
         
         <span class="code-name">
             
-                addUser<span class="signature">(id)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span>
+                addUser<span class="signature">(id, blacklist<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span>
             
         </span>
     </h4>
@@ -1222,7 +1222,7 @@
     
     
     <div class="description">
-        This function gets a user from the database
+        This function adds a user to the database - It is expected that the user does not already exist
     </div>
     
 
@@ -1247,7 +1247,11 @@
             <th>Type</th>
 
             
+            <th>Attributes</th>
+            
 
+            
+            <th>Default</th>
             
 
             <th class="last">Description</th>
@@ -1273,10 +1277,63 @@
   </td>
 
   
+      <td class="attributes">
+      
 
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+      </td>
   
 
   <td class="description last">The user's ID</td>
+</tr>
+
+
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>blacklist</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">boolean</code>
+
+
+  
+  </td>
+
+  
+      <td class="attributes">
+      
+          &lt;optional><br>
+      
+
+      
+
+      
+      </td>
+  
+
+  
+      <td class="default">
+      
+          false
+      
+      </td>
+  
+
+  <td class="description last">Whether to add the user to the blacklist</td>
 </tr>
 
 
@@ -1324,7 +1381,7 @@
         <p class="tag-source">
             <a href="db_mongo.js.html" class="button">View Source</a>
             <span>
-                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line165">line 165</a>
+                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line158">line 158</a>
             </span>
         </p>
     
@@ -1355,13 +1412,13 @@
 
 <div class="columns">
     
-    <div class='param-desc column is-7'>The user</div>
+    <div class='param-desc column is-7'>Nothing</div>
     
     
     <div class='column is-5 has-text-left'>
         <label>Type: </label>
         
-<code class="param-type">Promise.&lt;Object></code>
+<code class="param-type">Promise.&lt;void></code>
 
 
     </div>
@@ -1381,8 +1438,8 @@
 
 
     
-    <h4 class="name" id="blacklistUser">
-        <a class="href-link" href="#blacklistUser">#</a>
+    <h4 class="name" id="blacklistAndDeleteUser">
+        <a class="href-link" href="#blacklistAndDeleteUser">#</a>
         
             
                 <span class='tag'>async</span>
@@ -1390,7 +1447,7 @@
         
         <span class="code-name">
             
-                blacklistUser<span class="signature">(id)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span>
+                blacklistAndDeleteUser<span class="signature">(member)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span>
             
         </span>
     </h4>
@@ -1399,7 +1456,7 @@
     
     
     <div class="description">
-        This function adds a user to the blacklist
+        This function blacklists and deletes a user from the database - It is expected that the user exists
     </div>
     
 
@@ -1437,7 +1494,7 @@
             
 <tr class="deep-level-0">
   
-      <td class="name"><code>id</code></td>
+      <td class="name"><code>member</code></td>
   
 
   <td class="type">
@@ -1453,7 +1510,7 @@
 
   
 
-  <td class="description last">The user's ID</td>
+  <td class="description last">The GuildMember object</td>
 </tr>
 
 
@@ -1501,7 +1558,7 @@
         <p class="tag-source">
             <a href="db_mongo.js.html" class="button">View Source</a>
             <span>
-                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line189">line 189</a>
+                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line218">line 218</a>
             </span>
         </p>
     
@@ -1627,7 +1684,7 @@
         <p class="tag-source">
             <a href="db_mongo.js.html" class="button">View Source</a>
             <span>
-                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line92">line 92</a>
+                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line86">line 86</a>
             </span>
         </p>
     
@@ -1684,8 +1741,8 @@
 
 
     
-    <h4 class="name" id="delKey">
-        <a class="href-link" href="#delKey">#</a>
+    <h4 class="name" id="deleteKey">
+        <a class="href-link" href="#deleteKey">#</a>
         
             
                 <span class='tag'>async</span>
@@ -1693,7 +1750,7 @@
         
         <span class="code-name">
             
-                delKey<span class="signature">(collection, key)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span>
+                deleteKey<span class="signature">(collection, key)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span>
             
         </span>
     </h4>
@@ -1825,7 +1882,7 @@
         <p class="tag-source">
             <a href="db_mongo.js.html" class="button">View Source</a>
             <span>
-                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line119">line 119</a>
+                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line113">line 113</a>
             </span>
         </p>
     
@@ -2002,7 +2059,7 @@
         <p class="tag-source">
             <a href="db_mongo.js.html" class="button">View Source</a>
             <span>
-                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line133">line 133</a>
+                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line125">line 125</a>
             </span>
         </p>
     
@@ -2217,6 +2274,204 @@
         <label>Type: </label>
         
 <code class="param-type">Promise.&lt;any></code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="getUser">
+        <a class="href-link" href="#getUser">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                getUser<span class="signature">(id)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        This function gets a user from the database - It is expected that the user exists
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>id</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">The user's ID</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="db_mongo.js.html" class="button">View Source</a>
+            <span>
+                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line194">line 194</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Throws:</label></div>
+        <div class="column is-10">
+            
+                    
+<div class="columns">
+    
+    <div class='param-desc column is-7'>If the user doesn't exist</div>
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+<code class="param-type">Error</code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>The user</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">Promise.&lt;Object></code>
 
 
     </div>
@@ -2543,6 +2798,183 @@
         <label>Type: </label>
         
 <code class="param-type">Promise.&lt;void></code>
+
+
+    </div>
+    
+</div>
+
+                
+        </div>
+    </div>
+
+
+
+
+</div>
+            
+                <div class="member">
+
+
+    
+    <h4 class="name" id="isBlacklisted">
+        <a class="href-link" href="#isBlacklisted">#</a>
+        
+            
+                <span class='tag'>async</span>
+            
+        
+        <span class="code-name">
+            
+                isBlacklisted<span class="signature">(id)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span>
+            
+        </span>
+    </h4>
+    
+
+    
+    
+    <div class="description">
+        This function returns whether a user is blacklisted from the database - It is expected that the user exists
+    </div>
+    
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+<div class="table-container">
+    <table class="params table">
+        <thead>
+        <tr>
+            
+            <th>Name</th>
+            
+
+            <th>Type</th>
+
+            
+
+            
+
+            <th class="last">Description</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        
+
+            
+<tr class="deep-level-0">
+  
+      <td class="name"><code>id</code></td>
+  
+
+  <td class="type">
+  
+      
+<code class="param-type">string</code>
+
+
+  
+  </td>
+
+  
+
+  
+
+  <td class="description last">The user's ID</td>
+</tr>
+
+
+        
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="db_mongo.js.html" class="button">View Source</a>
+            <span>
+                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line207">line 207</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class='columns method-parameter'>
+        <div class="column is-2"><label>Returns:</label></div>
+        <div class="column is-10">
+            
+                    
+
+<div class="columns">
+    
+    <div class='param-desc column is-7'>Whether the user is blacklisted</div>
+    
+    
+    <div class='column is-5 has-text-left'>
+        <label>Type: </label>
+        
+<code class="param-type">Promise.&lt;boolean></code>
 
 
     </div>
@@ -3237,7 +3669,7 @@
         <p class="tag-source">
             <a href="db_mongo.js.html" class="button">View Source</a>
             <span>
-                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line147">line 147</a>
+                <a href="db_mongo.js.html">db/mongo.js</a>, <a href="db_mongo.js.html#line139">line 139</a>
             </span>
         </p>
     

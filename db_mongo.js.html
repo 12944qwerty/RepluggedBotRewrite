@@ -68,7 +68,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#addKey">addKey</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#blacklistUser">blacklistUser</a></li><li><a href="global.html#bot">bot</a></li><li><a href="global.html#clientID">clientID</a></li><li><a href="global.html#connectDB">connectDB</a></li><li><a href="global.html#database">database</a></li><li><a href="global.html#dbName">dbName</a></li><li><a href="global.html#delKey">delKey</a></li><li><a href="global.html#devMode">devMode</a></li><li><a href="global.html#getKeys">getKeys</a></li><li><a href="global.html#getSetting">getSetting</a></li><li><a href="global.html#guildID">guildID</a></li><li><a href="global.html#handleInteraction">handleInteraction</a></li><li><a href="global.html#indexSlashCommands">indexSlashCommands</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#pushCommands">pushCommands</a></li><li><a href="global.html#rawDB">rawDB</a></li><li><a href="global.html#readJSON">readJSON</a></li><li><a href="global.html#restAPI">restAPI</a></li><li><a href="global.html#setupDB">setupDB</a></li><li><a href="global.html#slashCommandData">slashCommandData</a></li><li><a href="global.html#slashCommands">slashCommands</a></li><li><a href="global.html#userExists">userExists</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#addKey">addKey</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#blacklistAndDeleteUser">blacklistAndDeleteUser</a></li><li><a href="global.html#bot">bot</a></li><li><a href="global.html#clientID">clientID</a></li><li><a href="global.html#connectDB">connectDB</a></li><li><a href="global.html#database">database</a></li><li><a href="global.html#dbName">dbName</a></li><li><a href="global.html#deleteKey">deleteKey</a></li><li><a href="global.html#devMode">devMode</a></li><li><a href="global.html#getKeys">getKeys</a></li><li><a href="global.html#getSetting">getSetting</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#guildID">guildID</a></li><li><a href="global.html#handleInteraction">handleInteraction</a></li><li><a href="global.html#indexSlashCommands">indexSlashCommands</a></li><li><a href="global.html#isBlacklisted">isBlacklisted</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#pushCommands">pushCommands</a></li><li><a href="global.html#rawDB">rawDB</a></li><li><a href="global.html#readJSON">readJSON</a></li><li><a href="global.html#restAPI">restAPI</a></li><li><a href="global.html#setupDB">setupDB</a></li><li><a href="global.html#slashCommandData">slashCommandData</a></li><li><a href="global.html#slashCommands">slashCommands</a></li><li><a href="global.html#userExists">userExists</a></li></ul></div>
                 
             </nav>
         </div>
@@ -158,16 +158,10 @@ async function setupDB(db) {
             cutieStatus: {
                 pledgeTier: 3,
                 perksExpireAt: '1671835532',
-            }
+            },
+            blacklisted: false,
         });
         console.log('[MongoDB]: Created users collection.');
-    }
-    if (!collectionNames.includes('blacklist')) {
-        await db.createCollection('blacklist');
-        await db.collection('blacklist').insertOne({
-            _id: '000000000000000000',
-        });
-        console.log('[MongoDB]: Created blacklist collection.');
     }
 }
 
@@ -203,11 +197,9 @@ export async function addKey(collection, key, value) {
  * @returns {Promise&lt;void>} Nothing
  * @async
  */
-export async function delKey(collection, key) {
+export async function deleteKey(collection, key) {
     await database.collection(collection).deleteOne({
-        [key]: {
-            $exists: true,
-        }
+        _id: key,
     });
 }
 
@@ -244,39 +236,75 @@ export async function userExists(id) {
 }
 
 /**
- * This function gets a user from the database
+ * This function adds a user to the database - It is expected that the user does not already exist
  * @param {string} id The user's ID
- * @returns {Promise&lt;Object>} The user
- * @async
- */
-export async function addUser(member) {
-    if ((await userExists(member.id))) return; // We don't want to overwrite existing users
-    const user = await database.collection('users').insertOne({
-        _id: member.id,
-        avatar: member.user.avatarURL(),
-        createdAt: new Date(),
-        discriminator: member.user.discriminator,
-        flags: member.user.flags,
-        username: member.user.username,
-        accounts: {},
-        cutiePerks: {},
-        cutieStatus: {
-            pledgeTier: 0,
-        }
-    });
-    return user;
-}
-
-/**
- * This function adds a user to the blacklist
- * @param {string} id The user's ID
+ * @param {boolean} [blacklist=false] Whether to add the user to the blacklist
  * @returns {Promise&lt;void>} Nothing
  * @async
  */
-export async function blacklistUser(id) {
-    await database.collection('blacklist').updateOne({
+export async function addUser(member, blacklist = false) {
+    if ((await userExists(member.id))) {
+        throw new Error('exists');
+    }
+    if (blacklist) {
+        await database.collection('users').insertOne({
+            _id: member.id,
+            blacklisted: true
+        });
+    }
+    else {
+        await database.collection('users').insertOne({
+            _id: member.id,
+            avatar: member.user.avatarURL(),
+            createdAt: new Date(),
+            discriminator: member.user.discriminator,
+            flags: member.user.flags,
+            username: member.user.username,
+            accounts: {},
+            cutiePerks: {},
+            cutieStatus: {
+                pledgeTier: 0,
+            },
+            blacklisted: false
+        });
+    }
+}
+
+/**
+         * This function gets a user from the database - It is expected that the user exists
+         * @param {string} id The user's ID
+         * @returns {Promise&lt;Object>} The user
+         *
+         * @async
+         * @throws {Error} If the user doesn't exist
+*/
+export async function getUser(id) {
+    if (!(await userExists(id))) throw new Error('nonexistent');
+    return await database.collection('users').findOne({
         _id: id,
     });
+}
+
+/**
+         * This function returns whether a user is blacklisted from the database - It is expected that the user exists
+         * @param {string} id The user's ID
+         * @returns {Promise&lt;boolean>} Whether the user is blacklisted
+         * @async
+*/
+export async function isBlacklisted(id) {
+    const user = await getUser(id);
+    return user.blacklisted;
+}
+
+/**
+         * This function blacklists and deletes a user from the database - It is expected that the user exists
+         * @param {string} member The GuildMember object
+         * @returns {Promise&lt;void>} Nothing
+         * @async
+*/
+export async function blacklistAndDeleteUser(member) {
+    await deleteKey('users', member.id);
+    await addUser(member, true);
 }</code></pre>
         </article>
     </section>
