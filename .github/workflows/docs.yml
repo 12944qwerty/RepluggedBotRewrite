@@ -1,4 +1,19 @@
-- name: Make docs
-  uses: andstor/jsdoc-action@v1
-  with:
-      config_file: ./jsdoc.json
+name: jsdoc
+on:
+ push:
+   branches:
+     - master
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: jsdoc
+      uses: codevise/documentation-js-action@v1
+      with:
+        input: ./src
+        output: ./docs
+        config: ./jsdoc.json
