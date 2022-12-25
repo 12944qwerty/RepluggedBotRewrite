@@ -7,13 +7,26 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - uses: actions/checkout@v1
+      - name: Check out Git repository
+        uses: actions/checkout@v2
 
-    - name: jsdoc
-      uses: codevise/documentation-js-action@v1
-      with:
-        input: ./src
-        output: ./docs
-        config: ./jsdoc.json
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install Node.js dependencies
+        run: pnpm install
+
+      - name: jsdoc
+        uses: codevise/documentation-js-action@v1
+        with:
+          input: ./src
+          output: ./docs
+          config: ./jsdoc.json
