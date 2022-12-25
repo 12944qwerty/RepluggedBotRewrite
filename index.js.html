@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> index.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#addKey">addKey</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#blacklistUser">blacklistUser</a></li><li><a href="global.html#bot">bot</a></li><li><a href="global.html#clientID">clientID</a></li><li><a href="global.html#connectDB">connectDB</a></li><li><a href="global.html#database">database</a></li><li><a href="global.html#dbName">dbName</a></li><li><a href="global.html#delKey">delKey</a></li><li><a href="global.html#devMode">devMode</a></li><li><a href="global.html#getKeys">getKeys</a></li><li><a href="global.html#getSetting">getSetting</a></li><li><a href="global.html#guildID">guildID</a></li><li><a href="global.html#handleInteraction">handleInteraction</a></li><li><a href="global.html#indexSlashCommands">indexSlashCommands</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#pushCommands">pushCommands</a></li><li><a href="global.html#rawDB">rawDB</a></li><li><a href="global.html#readJSON">readJSON</a></li><li><a href="global.html#restAPI">restAPI</a></li><li><a href="global.html#setupDB">setupDB</a></li><li><a href="global.html#slashCommandData">slashCommandData</a></li><li><a href="global.html#slashCommands">slashCommands</a></li><li><a href="global.html#userExists">userExists</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>index.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { Client, GatewayIntentBits, Events } from 'discord.js';
+import { config } from 'dotenv';
+
+config();
+
+/** The bot client
+ * @type {Client}
+ */
+export const bot = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+    ],
+});
+
+// Ready Event
+
+bot.once(Events.ClientReady, () => {
+    console.log(`[Info]: Connected To Discord!\n[Info]:\tGuild Count: ${bot.guilds.cache.size}\n[Info]:\tMy ID: ${bot.user?.id}`);
+});
+
+// DB Connection ***************************************************************
+
+import { connectDB } from './db/mongo.js';
+await connectDB();
+
+// Slash Command Indexer ******************************************************
+
+import { indexSlashCommands } from './indexer/slash.js';
+await indexSlashCommands();
+
+// Push Slash Commands To Discord *********************************************
+
+import { getSetting } from './db/config.js';
+import { pushCommands } from './lib/pushCommands.js';
+if (await getSetting('PushCommands')) {
+    await pushCommands();
+}
+
+// Interaction Handler ********************************************************
+
+import { handleInteraction } from './events/interaction.js';
+
+bot.on(Events.InteractionCreate, async interaction => {
+    try {
+        await handleInteraction(interaction, bot);
+    } catch
+    (error) {
+        console.error(`[Interaction Handler]: ${error}`);
+    }
+});
+
+import { handleMemberLeave } from './events/memberLeave.js';
+
+bot.on(Events.GuildMemberRemove, async member => {
+    try {
+        await handleMemberLeave(member);
+    } catch (error) {
+        console.error(`[Guild Leave Handler]: ${error}`);
+    }
+});
+
+// Guild Member Update ********************************************************
+
+import { handleMemberUpdate } from './events/memberUpdate.js';
+
+bot.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
+    try {
+        await handleMemberUpdate(oldMember, newMember);
+    } catch (error) {
+        console.error(`[Guild Update Handler]: ${error}`);
+    }
+});
+
+// Other Events ***************************************************************
+
+bot.on(Events.Error, (e) => console.error(`[Discord API]: ${e}`));
+bot.on(Events.Warn, (e) => console.warn(`[Discord API]: ${e}`));
+bot.on(Events.Invalidated, async () => {
+    console.log('[Fatal]: Session invalidated! Goodbye!');
+    await bot.db.close();
+    bot.destroy();
+    process.exit(1);
+});
+
+// Login **********************************************************************
+
+bot.login(process.env.DISCORD_TOKEN);</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.0</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>

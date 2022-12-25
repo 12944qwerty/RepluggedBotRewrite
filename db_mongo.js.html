@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> db/mongo.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#addKey">addKey</a></li><li><a href="global.html#addUser">addUser</a></li><li><a href="global.html#blacklistUser">blacklistUser</a></li><li><a href="global.html#bot">bot</a></li><li><a href="global.html#clientID">clientID</a></li><li><a href="global.html#connectDB">connectDB</a></li><li><a href="global.html#database">database</a></li><li><a href="global.html#dbName">dbName</a></li><li><a href="global.html#delKey">delKey</a></li><li><a href="global.html#devMode">devMode</a></li><li><a href="global.html#getKeys">getKeys</a></li><li><a href="global.html#getSetting">getSetting</a></li><li><a href="global.html#guildID">guildID</a></li><li><a href="global.html#handleInteraction">handleInteraction</a></li><li><a href="global.html#indexSlashCommands">indexSlashCommands</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#pushCommands">pushCommands</a></li><li><a href="global.html#rawDB">rawDB</a></li><li><a href="global.html#readJSON">readJSON</a></li><li><a href="global.html#restAPI">restAPI</a></li><li><a href="global.html#setupDB">setupDB</a></li><li><a href="global.html#slashCommandData">slashCommandData</a></li><li><a href="global.html#slashCommands">slashCommands</a></li><li><a href="global.html#userExists">userExists</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>db/mongo.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { config } from 'dotenv';
+import { MongoClient } from 'mongodb';
+import { getSetting } from './config.js';
+
+/**
+ * The name of the database
+ * @type {string}
+ */
+const dbName = await getSetting('DB');
+
+config(); // dotenv
+
+/**
+ * This function connects to the database and returns the database object
+ * @returns {Promise&lt;Object>} The database object
+ * @async
+ */
+async function rawDB() {
+    console.log('[MongoDB]: Attempting connection to MongoDB...');
+    const db = new MongoClient(`mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_ADDRESS}:${process.env.MONGO_PORT}/${dbName}`);
+    await db.connect()
+        .then(() => console.log('[MongoDB]: Connected To MongoDB!'))
+        .catch(e => console.error(`[Fatal][MongoDB]: Couldn't connect to database!\n${e}`));
+    return db.db(dbName);
+}
+
+/** The database object
+ * @type {Object}
+ */
+const database = await rawDB();
+
+/**
+ * This function sets up the database if it isn't already set up
+ * @param {Object} db The database object
+ * @returns {Promise&lt;void>} Nothing
+ * @async
+ */
+async function setupDB(db) {
+    const collections = await db.listCollections().toArray();
+    const collectionNames = collections.map(collection => collection.name);
+    if (!collectionNames.includes('users')) {
+        await db.createCollection('users');
+        await db.collection('users').insertOne({
+            _id: '000000000000000000',
+            avatar: 'https://cdn.discordapp.com/embed/avatars/0.png',
+            createdAt: '2022-12-23T22:39:03.845Z',
+            discriminator: '0000',
+            flags: 0,
+            username: 'User',
+            accounts: {
+                discord: {
+                    accessToken: 'XXXXXXXXXXXXXXXXX',
+                    expiresAt: '1671835532',
+                    refreshToken: 'XXXXXXXX',
+                    tokenType: 'Bearer',
+                },
+                spotify: {
+                    accessToken: 'XXXXXXXXXXXXXXXXX',
+                    expiresAt: '1671835532',
+                    id: 'ExampleUser',
+                    name: 'Example User',
+                    refreshToken: 'XXXXXXXX',
+                    tokenType: 'Bearer',
+                }
+            },
+            cutiePerks: {
+                badge: 'https://cdn.discordapp.com/attachments/1/1/1.png',
+                color: '#888888',
+                title: 'Example Perk'
+            },
+            cutieStatus: {
+                pledgeTier: 3,
+                perksExpireAt: '1671835532',
+            }
+        });
+        console.log('[MongoDB]: Created users collection.');
+    }
+    if (!collectionNames.includes('blacklist')) {
+        await db.createCollection('blacklist');
+        await db.collection('blacklist').insertOne({
+            _id: '000000000000000000',
+        });
+        console.log('[MongoDB]: Created blacklist collection.');
+    }
+}
+
+/**
+ * This function connects to the database and returns the database object
+ * @returns {Promise&lt;Object>} The database object
+ * @async
+ */
+export async function connectDB() {
+    await setupDB(database);
+    return database;
+}
+
+
+/**
+ * This function adds a key to a collection
+ * @param {string} collection The collection to add the key to
+ * @param {string} key The key to add
+ * @param {any} value The value of the key
+ * @returns {Promise&lt;void>} Nothing
+ * @async
+ */
+export async function addKey(collection, key, value) {
+    await database.collection(collection).insertOne({
+        [key]: value,
+    });
+}
+
+/**
+ *
+ * @param {string} collection The collection to the key is in
+ * @param {string} key The key to delete
+ * @returns {Promise&lt;void>} Nothing
+ * @async
+ */
+export async function delKey(collection, key) {
+    await database.collection(collection).deleteOne({
+        [key]: {
+            $exists: true,
+        }
+    });
+}
+
+/**
+ * This function gets all keys from a collection
+ * @param {string} collection The collection to get the keys from
+ * @returns {Promise&lt;Array>} The keys
+ * @async
+ */
+export async function getKeys(collection) {
+    const unfiltered = await database.collection(collection).find().toArray();
+    for (const key in unfiltered) {
+        delete unfiltered[key]._id;
+    }
+    return unfiltered;
+}
+
+/**
+ * This function checks if a user exists in the database
+ * @param {string} id The user's ID
+ * @returns {Promise&lt;boolean>} Whether the user exists
+ * @async
+ */
+export async function userExists(id) {
+    const user = await database.collection('users').findOne({
+        _id: id,
+    });
+    if (user) {
+        return true;
+
+    } else {
+        return false;
+    }
+}
+
+/**
+ * This function gets a user from the database
+ * @param {string} id The user's ID
+ * @returns {Promise&lt;Object>} The user
+ * @async
+ */
+export async function addUser(member) {
+    if ((await userExists(member.id))) return; // We don't want to overwrite existing users
+    const user = await database.collection('users').insertOne({
+        _id: member.id,
+        avatar: member.user.avatarURL(),
+        createdAt: new Date(),
+        discriminator: member.user.discriminator,
+        flags: member.user.flags,
+        username: member.user.username,
+        accounts: {},
+        cutiePerks: {},
+        cutieStatus: {
+            pledgeTier: 0,
+        }
+    });
+    return user;
+}
+
+/**
+ * This function adds a user to the blacklist
+ * @param {string} id The user's ID
+ * @returns {Promise&lt;void>} Nothing
+ * @async
+ */
+export async function blacklistUser(id) {
+    await database.collection('blacklist').updateOne({
+        _id: id,
+    });
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.0</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>
