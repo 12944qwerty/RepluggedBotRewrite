@@ -1,13 +1,13 @@
-name: jsdoc
+name: Push docs to github pages
+
 on:
- push:
-   branches:
-     - main
+  push:
+    branches:
+      - main
 
 jobs:
-  publish:
+  deploy:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
@@ -26,3 +26,9 @@ jobs:
 
       - name: jsdoc
         run: pnpm run mkdocs
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: ./docs
