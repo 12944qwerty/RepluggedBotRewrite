@@ -25,8 +25,4 @@ jobs:
         run: pnpm install
 
       - name: jsdoc
-        uses: codevise/documentation-js-action@v1
-        with:
-          input: ./src
-          output: ./docs
-          config: ./jsdoc.json
+        run: pnpm run mkdocs
