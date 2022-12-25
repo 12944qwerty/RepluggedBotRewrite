@@ -38,8 +38,7 @@ export async function execute(interaction) {
         embed
             .setDescription('This is your data in the Replugged database. If you want to opt out of the database, use `/optout`.\n\n*Data for account authentication will not be shown here.*\n\n*Data returned here is generally not anything sensitive, but it is still recommended you keep this to yourself.*')
             .addFields(
-                { name: 'Username', value: user.username },
-                { name: 'Discriminator', value: user.discriminator },
+                { name: 'Tag', value: `${user.username}#${user.discriminator}` },
                 { name: 'Avatar', value: user.avatar },
                 { name: 'Flags', value: `\`\`\`json\n${JSON.stringify(user.flags, null, 4)}\`\`\`` },
                 { name: 'CutieStatus Object', value: `\`\`\`json\n${JSON.stringify(user.cutieStatus, null, 4)}\`\`\`` },
