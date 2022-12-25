@@ -2,7 +2,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "mkdocs": "jsdoc -c jsdoc.json"
   },
   "dependencies": {
     "@discordjs/rest": "^1.5.0",
@@ -12,7 +13,13 @@
     "mongodb": "^4.13.0"
   },
   "devDependencies": {
+    "better-docs": "^2.7.2",
     "eslint": "^8.30.0",
-    "prettier": "^2.8.1"
+    "jsdoc": "^4.0.0",
+    "prettier": "^2.8.1",
+    "prop-types": "^15.8.1",
+    "react": "17",
+    "react-dom": "17.0.2",
+    "taffydb": "^2.7.3"
   }
 }

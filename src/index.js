@@ -3,6 +3,9 @@ import { config } from 'dotenv';
 
 config();
 
+/** The bot client
+ * @type {Client}
+ */
 export const bot = new Client({
     intents: [
         GatewayIntentBits.Guilds,

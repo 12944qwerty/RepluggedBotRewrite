@@ -12,14 +12,14 @@
             "SERVER_BOOSTER"
         ],
         "SetDB": [
-            "CONTRIUBUTOR",
+            "CONTRIBUTOR",
             "SERVER_BOOSTER",
             "TRANSLATOR",
             "BUG_HUNTER",
             "EARLY_USER"
         ],
         "SetDiscord": [
-            "CONTRIUBUTOR",
+            "CONTRIBUTOR",
             "TRANSLATOR",
             "BUG_HUNTER",
             "EARLY_USER"

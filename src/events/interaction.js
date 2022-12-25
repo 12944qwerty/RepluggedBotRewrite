@@ -1,5 +1,12 @@
 import { slashCommands } from '../indexer/slash.js';
 
+/**
+ * Handles interactions
+ * @param {interaction} interaction The interaction
+ * @param {Client} bot The bot client
+ * @returns {Promise<void>}
+ * @async
+ */
 export async function handleInteraction(interaction, bot) {
     if (interaction.isCommand()) {
         try {

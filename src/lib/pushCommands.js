@@ -5,12 +5,28 @@ import { config } from 'dotenv';
 import { getSetting } from '../db/config.js';
 config();
 
+/** The test guild ID
+ * @type {string}
+ */
 const guildID = await getSetting('DevGuildID');
+/** The bot ID
+ * @type {string}
+ */
 const clientID = await getSetting('BotID');
+/** Whether or not the bot is in dev mode
+ * @type {boolean}
+ */
 const devMode = await getSetting('DevMode');
-
+/** The Discord REST API
+ * @type {REST}
+ */
 const restAPI = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
+/**
+ * This function pushes the slash commands to Discord
+ * @returns {Promise<void>} Nothing
+ * @async
+ */
 export async function pushCommands() {
     if (slashCommandData.length === 0) {
         console.log('[Slash Command Pusher]: No commands to push!');

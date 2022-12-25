@@ -1,7 +1,19 @@
 import { readdirSync } from 'fs';
+
+/** The data for all slash commands
+ * @type {Array<Object>}
+ */
 export const slashCommandData = [];
+
+/** The slash commands
+ * @type {Map<string, Object>}
+ */
 export const slashCommands = new Map();
 
+/** Indexes all slash commands
+ * @returns {Promise<void>} Nothing
+ * @async
+ */
 export async function indexSlashCommands() {
     const commandFiles = readdirSync('./src/commands/').filter(file => file.endsWith('.js') && file.startsWith('slash.'));
     for (const file of commandFiles) {

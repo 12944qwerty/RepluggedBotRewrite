@@ -2,10 +2,19 @@ import { config } from 'dotenv';
 import { MongoClient } from 'mongodb';
 import { getSetting } from './config.js';
 
+/**
+ * The name of the database
+ * @type {string}
+ */
 const dbName = await getSetting('DB');
 
 config(); // dotenv
 
+/**
+ * This function connects to the database and returns the database object
+ * @returns {Promise<Object>} The database object
+ * @async
+ */
 async function rawDB() {
     console.log('[MongoDB]: Attempting connection to MongoDB...');
     const db = new MongoClient(`mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_ADDRESS}:${process.env.MONGO_PORT}/${dbName}`);
@@ -15,8 +24,17 @@ async function rawDB() {
     return db.db(dbName);
 }
 
+/** The database object
+ * @type {Object}
+ */
 const database = await rawDB();
 
+/**
+ * This function sets up the database if it isn't already set up
+ * @param {Object} db The database object
+ * @returns {Promise<void>} Nothing
+ * @async
+ */
 async function setupDB(db) {
     const collections = await db.listCollections().toArray();
     const collectionNames = collections.map(collection => collection.name);
@@ -66,26 +84,52 @@ async function setupDB(db) {
     }
 }
 
+/**
+ * This function connects to the database and returns the database object
+ * @returns {Promise<Object>} The database object
+ * @async
+ */
 export async function connectDB() {
     await setupDB(database);
     return database;
 }
 
+
+/**
+ * This function adds a key to a collection
+ * @param {string} collection The collection to add the key to
+ * @param {string} key The key to add
+ * @param {any} value The value of the key
+ * @returns {Promise<void>} Nothing
+ * @async
+ */
 export async function addKey(collection, key, value) {
-    database.collection(collection).insertOne({
+    await database.collection(collection).insertOne({
         [key]: value,
     });
 }
 
-
+/**
+ *
+ * @param {string} collection The collection to the key is in
+ * @param {string} key The key to delete
+ * @returns {Promise<void>} Nothing
+ * @async
+ */
 export async function delKey(collection, key) {
-    database.collection(collection).deleteOne({
+    await database.collection(collection).deleteOne({
         [key]: {
             $exists: true,
         }
     });
 }
 
+/**
+ * This function gets all keys from a collection
+ * @param {string} collection The collection to get the keys from
+ * @returns {Promise<Array>} The keys
+ * @async
+ */
 export async function getKeys(collection) {
     const unfiltered = await database.collection(collection).find().toArray();
     for (const key in unfiltered) {
@@ -94,6 +138,12 @@ export async function getKeys(collection) {
     return unfiltered;
 }
 
+/**
+ * This function checks if a user exists in the database
+ * @param {string} id The user's ID
+ * @returns {Promise<boolean>} Whether the user exists
+ * @async
+ */
 export async function userExists(id) {
     const user = await database.collection('users').findOne({
         _id: id,
@@ -106,6 +156,12 @@ export async function userExists(id) {
     }
 }
 
+/**
+ * This function gets a user from the database
+ * @param {string} id The user's ID
+ * @returns {Promise<Object>} The user
+ * @async
+ */
 export async function addUser(member) {
     if ((await userExists(member.id))) return; // We don't want to overwrite existing users
     const user = await database.collection('users').insertOne({
@@ -124,8 +180,14 @@ export async function addUser(member) {
     return user;
 }
 
+/**
+ * This function adds a user to the blacklist
+ * @param {string} id The user's ID
+ * @returns {Promise<void>} Nothing
+ * @async
+ */
 export async function blacklistUser(id) {
-    database.collection('blacklist').updateOne({
+    await database.collection('blacklist').updateOne({
         _id: id,
     });
 }
