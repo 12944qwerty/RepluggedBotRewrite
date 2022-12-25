@@ -11,9 +11,15 @@ export async function handleInteraction(interaction, bot) {
         }
     }
     else if (interaction.isButton()) {
-        //console.log(interaction);
-        slashCommands.forEach(async command => {
-            console.log(command);
-        });
+        for (const command of slashCommands) {
+            const buttons = command[1]?.buttons; // first item in array is the command name, second is the command object
+            if (!buttons) continue;
+            buttons.forEach(async button => {
+                if (button.id === interaction.customId) {
+                    await button.execute(interaction, bot);
+                }
+            });
+
+        }
     }
 }
