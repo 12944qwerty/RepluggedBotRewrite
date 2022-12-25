@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { blacklistAndDeleteUser, userExists } from '../db/mongo.js';
 export const data = new SlashCommandBuilder()
     .setName('optout')
     .setDescription('Opt out of the Replugged database');
@@ -35,6 +36,11 @@ export const buttons = [
     {
         'id': 'optout.optout',
         'execute': async function (interaction) {
+            if (!(await userExists(interaction.user.id))) {
+                await interaction.reply({ content: 'You do not exist in the replugged database.', ephemeral: true });
+                return;
+            }
+            await blacklistAndDeleteUser(interaction.member);
             await interaction.reply({ content: 'You have been opted out of the Replugged database.', ephemeral: true });
         }
     },

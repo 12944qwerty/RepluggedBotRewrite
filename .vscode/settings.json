@@ -4,7 +4,8 @@
         "mkdocs",
         "optout",
         "reactionmanager",
-        "tagmanager"
+        "tagmanager",
+        "viewdata"
     ],
     "editor.codeActionsOnSave": {
         "source.fixAll": true

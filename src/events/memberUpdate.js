@@ -9,10 +9,9 @@ export async function handleMemberUpdate(member) {
     //         console.log('b');
     //     }
     // });
-    console.log('a');
     if (!(await userExists(member.id))) {
         await addUser(member);
-        console.log('fired');
+        console.log(`[MongoDB]: Added user \`${member.user.tag}\` to database.`);
     }
 
 }

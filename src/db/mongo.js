@@ -71,16 +71,10 @@ async function setupDB(db) {
             cutieStatus: {
                 pledgeTier: 3,
                 perksExpireAt: '1671835532',
-            }
+            },
+            blacklisted: false,
         });
         console.log('[MongoDB]: Created users collection.');
-    }
-    if (!collectionNames.includes('blacklist')) {
-        await db.createCollection('blacklist');
-        await db.collection('blacklist').insertOne({
-            _id: '000000000000000000',
-        });
-        console.log('[MongoDB]: Created blacklist collection.');
     }
 }
 
@@ -116,11 +110,9 @@ export async function addKey(collection, key, value) {
  * @returns {Promise<void>} Nothing
  * @async
  */
-export async function delKey(collection, key) {
+export async function deleteKey(collection, key) {
     await database.collection(collection).deleteOne({
-        [key]: {
-            $exists: true,
-        }
+        _id: key,
     });
 }
 
@@ -157,37 +149,73 @@ export async function userExists(id) {
 }
 
 /**
- * This function gets a user from the database
+ * This function adds a user to the database - It is expected that the user does not already exist
  * @param {string} id The user's ID
- * @returns {Promise<Object>} The user
- * @async
- */
-export async function addUser(member) {
-    if ((await userExists(member.id))) return; // We don't want to overwrite existing users
-    const user = await database.collection('users').insertOne({
-        _id: member.id,
-        avatar: member.user.avatarURL(),
-        createdAt: new Date(),
-        discriminator: member.user.discriminator,
-        flags: member.user.flags,
-        username: member.user.username,
-        accounts: {},
-        cutiePerks: {},
-        cutieStatus: {
-            pledgeTier: 0,
-        }
-    });
-    return user;
-}
-
-/**
- * This function adds a user to the blacklist
- * @param {string} id The user's ID
+ * @param {boolean} [blacklist=false] Whether to add the user to the blacklist
  * @returns {Promise<void>} Nothing
  * @async
  */
-export async function blacklistUser(id) {
-    await database.collection('blacklist').updateOne({
+export async function addUser(member, blacklist = false) {
+    if ((await userExists(member.id))) {
+        throw new Error('exists');
+    }
+    if (blacklist) {
+        await database.collection('users').insertOne({
+            _id: member.id,
+            blacklisted: true
+        });
+    }
+    else {
+        await database.collection('users').insertOne({
+            _id: member.id,
+            avatar: member.user.avatarURL(),
+            createdAt: new Date(),
+            discriminator: member.user.discriminator,
+            flags: member.user.flags,
+            username: member.user.username,
+            accounts: {},
+            cutiePerks: {},
+            cutieStatus: {
+                pledgeTier: 0,
+            },
+            blacklisted: false
+        });
+    }
+}
+
+/**
+         * This function gets a user from the database - It is expected that the user exists
+         * @param {string} id The user's ID
+         * @returns {Promise<Object>} The user
+         *
+         * @async
+         * @throws {Error} If the user doesn't exist
+*/
+export async function getUser(id) {
+    if (!(await userExists(id))) throw new Error('nonexistent');
+    return await database.collection('users').findOne({
         _id: id,
     });
+}
+
+/**
+         * This function returns whether a user is blacklisted from the database - It is expected that the user exists
+         * @param {string} id The user's ID
+         * @returns {Promise<boolean>} Whether the user is blacklisted
+         * @async
+*/
+export async function isBlacklisted(id) {
+    const user = await getUser(id);
+    return user.blacklisted;
+}
+
+/**
+         * This function blacklists and deletes a user from the database - It is expected that the user exists
+         * @param {string} member The GuildMember object
+         * @returns {Promise<void>} Nothing
+         * @async
+*/
+export async function blacklistAndDeleteUser(member) {
+    await deleteKey('users', member.id);
+    await addUser(member, true);
 }
