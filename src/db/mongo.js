@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { MongoClient } from 'mongodb';
 import { getSetting } from './config.js';
+import { readBits, updateBits } from '../lib/bitsWorker.js';
 
 /**
  * The name of the database
@@ -152,7 +153,7 @@ export async function userExists(id) {
  * This function adds a user to the database - It is expected that the user does not already exist
  * @param {string} id The user's ID
  * @param {boolean} [blacklist=false] Whether to add the user to the blacklist
- * @returns {Promise<void>} Nothing
+ * @returns {Promise<object>} the user object
  * @async
  */
 export async function addUser(member, blacklist = false) {
@@ -171,14 +172,14 @@ export async function addUser(member, blacklist = false) {
             avatar: member.user.avatarURL(),
             createdAt: new Date(),
             discriminator: member.user.discriminator,
-            flags: member.user.flags,
+            updatedAt: new Date(),
+            flags: 0,
             username: member.user.username,
             accounts: {},
             cutiePerks: {},
             cutieStatus: {
                 pledgeTier: 0,
-            },
-            blacklisted: false
+            }
         });
     }
 }
@@ -187,7 +188,6 @@ export async function addUser(member, blacklist = false) {
          * This function gets a user from the database - It is expected that the user exists
          * @param {string} id The user's ID
          * @returns {Promise<Object>} The user
-         *
          * @async
          * @throws {Error} If the user doesn't exist
 */
@@ -204,18 +204,47 @@ export async function getUser(id) {
          * @returns {Promise<boolean>} Whether the user is blacklisted
          * @async
 */
-export async function isBlacklisted(id) {
+export async function isGhosted(id) {
     const user = await getUser(id);
-    return user.blacklisted;
+    const bits = readBits(user.flags);
+    return bits[3];
 }
 
 /**
-         * This function blacklists and deletes a user from the database - It is expected that the user exists
-         * @param {string} member The GuildMember object
-         * @returns {Promise<void>} Nothing
-         * @async
-*/
-export async function blacklistAndDeleteUser(member) {
+ * This function updates a user's values - It is expected that the user exists
+ * @param {string} values The values to update
+ * @param {string} id The user's ID
+ * @returns {Promise<object>} The user
+ * @async
+ */
+export async function updateUser(key, value, id) {
+    if (!(await userExists(id))) throw new Error('nonexistent');
+    await database.collection('users').updateOne({
+        _id: id,
+    }, {
+        $set: {
+            [key]: value,
+        },
+    });
+    return await getUser(id);
+}
+
+/**
+             * This function marks a user as a ghost and deletes a user from the database - It is expected that the user exists
+             * @param {string} member The GuildMember object
+             * @returns {Promise<void>} Nothing
+             * @async
+    */
+export async function ghostAndDeleteUser(member) {
+    let saveBits = 0;
+    await getUser(member.id).then(async user => {
+        saveBits = user.flags;
+    });
+    saveBits = updateBits({ ghost: true }, saveBits);
     await deleteKey('users', member.id);
-    await addUser(member, true);
+    await addUser(member).then(async () => {
+        updateUser('flags', saveBits, member.id).then(async (user) => {
+            return user;
+        });
+    });
 }

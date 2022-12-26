@@ -7,16 +7,15 @@ config();
  * @type {Client}
  */
 export const bot = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-    ],
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
 
 // Ready Event
 
 bot.once(Events.ClientReady, () => {
-    console.log(`[Info]: Connected To Discord!\n[Info]:\tGuild Count: ${bot.guilds.cache.size}\n[Info]:\tMy ID: ${bot.user?.id}`);
+    console.log(
+        `[Info]: Connected To Discord!\n[Info]:\tGuild Count: ${bot.guilds.cache.size}\n[Info]:\tMy ID: ${bot.user?.id}`
+    );
 });
 
 // DB Connection ***************************************************************
@@ -41,18 +40,17 @@ if (await getSetting('PushCommands')) {
 
 import { handleInteraction } from './events/interaction.js';
 
-bot.on(Events.InteractionCreate, async interaction => {
+bot.on(Events.InteractionCreate, async (interaction) => {
     try {
         await handleInteraction(interaction, bot);
-    } catch
-    (error) {
+    } catch (error) {
         console.error(`[Interaction Handler]: ${error}`);
     }
 });
 
 import { handleMemberLeave } from './events/memberLeave.js';
 
-bot.on(Events.GuildMemberRemove, async member => {
+bot.on(Events.GuildMemberRemove, async (member) => {
     try {
         await handleMemberLeave(member);
     } catch (error) {
