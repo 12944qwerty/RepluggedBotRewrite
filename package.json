@@ -10,7 +10,7 @@
     "discord-api-types": "^0.37.24",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
-    "mongodb": "^4.13.0"
+    "mongodb": "^5.0.0"
   },
   "devDependencies": {
     "better-docs": "^2.7.2",
